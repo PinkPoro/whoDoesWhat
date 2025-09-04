@@ -1,0 +1,23 @@
+<div class="task-container">
+  <div class="task-container__header">
+    <h1>Oppgaver</h1>
+
+      <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Opprett ny oppgave
+    </button>
+  </div>
+
+  <input
+  class="task-container__search"
+  type="text"
+  placeholder="Søk etter id eller navn"
+  [(ngModel)]="searchTerm"
+  (ngModelChange)="onSearch($event)"/>
+
+  <app-tasks-table-component [tasks]="filteredTasks ? filteredTasks : task" (edit)="onEdit($event)" (remove)="onRemove($event)"/>
+
+  @if(showEditForm) {
+    <app-edit-task-component [form]="form" (save)="onSave(form)" (cancel)="onCancel()"/>
+  }
+</div>

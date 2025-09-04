@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -28,7 +28,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule
   ],
   templateUrl: './positions-container.component.html',
-  styleUrl: './positions-container.component.scss'
+  styleUrl: './positions-container.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PositionsContainerComponent implements OnDestroy {
   private store = inject(Store);
@@ -47,7 +48,7 @@ export class PositionsContainerComponent implements OnDestroy {
     this.store.dispatch(PositionsActions.load());
     this.subscriptions.add(this.store.select(selectAllPositions)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(rows => this.positions = rows));
+      .subscribe(rows => {this.positions = rows; this.applyFilter();}));
   }
 
   openCreateDialog() {
@@ -85,14 +86,12 @@ export class PositionsContainerComponent implements OnDestroy {
   }
 
   onSave(form: Position) {
-    let id = form.id;
-    const payload = { ...form, id: Number(id) };
-    const error = this.validatePosition(payload);
+    const error = this.validatePosition(form);
     if (error) {
       this.snackBar.open(error, 'Lukk', { duration: 4000 });
       return;
     }
-    this.store.dispatch(PositionsActions.save({ position: payload }));
+    this.store.dispatch(PositionsActions.save({ position: form }));
     this.onReset();
     this.showEditForm = false;
   }

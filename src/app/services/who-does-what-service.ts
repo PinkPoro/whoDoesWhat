@@ -8,9 +8,15 @@ export class WhoDoesWhatService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:3000';
 
-  employees(): Observable<Employee[]> { return this.http.get<Employee[]>(`${this.baseUrl}/employees`); }
-  getPositions():  Observable<Position[]> { return this.http.get<Position[]>(`${this.baseUrl}/positions`); }
-  tasks():      Observable<Task[]>     { return this.http.get<Task[]>(`${this.baseUrl}/tasks`); }
+  employees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(`${this.baseUrl}/employees`);
+  }
+  getPositions(): Observable<Position[]> {
+    return this.http.get<Position[]>(`${this.baseUrl}/positions`);
+  }
+  tasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks`);
+  }
   employeeById(id: number) { return this.http.get<Employee>(`${this.baseUrl}/employees/${id}`); }
   positionById(id: number) { return this.http.get<Position>(`${this.baseUrl}/positions/${id}`); }
   taskById(id: number)     { return this.http.get<Task>(`${this.baseUrl}/tasks/${id}`); }
@@ -27,7 +33,9 @@ export class WhoDoesWhatService {
   createPosition(p: Position) {
     return this.http.post<Position>(`${this.baseUrl}/positions`, p);
   }
-  createTask(t: Omit<Task, 'id'>)         { return this.http.post<Task>(`${this.baseUrl}/tasks`, t); }
+  createTask(t: Task) {
+    return this.http.post<Task>(`${this.baseUrl}/tasks`, t);
+  }
 
   updatePosition(p: Position) { return this.http.put<Position>(`${this.baseUrl}/positions/${p.id}`, p); }
   updateTask(t: Task)         { return this.http.put<Task>(`${this.baseUrl}/tasks/${t.id}`, t); }

@@ -31,6 +31,19 @@ import { TasksActions } from './tasks.actions';
     )
   );
 
+  create$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TasksActions.create),
+      mergeMap(({ task }) => {
+        const call$ = task.id ? this.api.createTask(task) : this.api.createTask(task);
+        return call$.pipe(
+          map(p => TasksActions.createSuccess({ task: p })),
+          catchError(error => of(TasksActions.createFailure({ error })))
+        );
+      })
+    )
+  );
+
   delete$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TasksActions.delete),

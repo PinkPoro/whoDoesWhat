@@ -1,12 +1,12 @@
-<div class="create-position-dialog">
-  <h2 mat-dialog-title>Ny stilling</h2>
-  <form (ngSubmit)="onCreate()" autocomplete="off" class="create-position-dialog__form">
+<div class="create-task-dialog">
+  <h2 mat-dialog-title>Ny oppgave</h2>
+  <form (ngSubmit)="onCreate()" autocomplete="off" class="create-task-dialog__form">
     <mat-form-field appearance="outline">
       <mat-label>Id</mat-label>
       <input matInput [(ngModel)]="form.id" name="id">
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Stillingsnavn</mat-label>
+      <mat-label>Oppgavenavn</mat-label>
       <input matInput [(ngModel)]="form.name" name="name" required>
     </mat-form-field>
     <mat-form-field appearance="outline">
@@ -14,15 +14,11 @@
       <input matInput type="number" [(ngModel)]="form.employeeId" name="employeeId" required>
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-label>Start</mat-label>
-      <input matInput [(ngModel)]="form.period.start" name="start" required>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Slutt</mat-label>
-      <input matInput [(ngModel)]="form.period.end" name="end" required>
+      <mat-label>Dato</mat-label>
+      <input matInput [(ngModel)]="form.date" name="date" required>
     </mat-form-field>
     <div class="actions">
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.name || !form.employeeId || !form.period.start || !form.period.end">
+      <button mat-flat-button color="primary" type="submit" [disabled]="!form.name || !form.employeeId || !form.date">
         Opprett
       </button>
       <button mat-stroked-button type="button" (click)="onCancel()">Avbryt</button>

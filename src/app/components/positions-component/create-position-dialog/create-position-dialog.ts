@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule
   ],
   templateUrl: './create-position-dialog.html',
-  styleUrl: './create-position-dialog.scss'
+  styleUrls: ['./create-position-dialog.scss']
 })
 export class CreatePositionDialogComponent {
   private ref = inject(MatDialogRef<CreatePositionDialogComponent>);

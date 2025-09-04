@@ -1,0 +1,37 @@
+<table class="tasks-table" mat-table [dataSource]="dataSource" matSort>
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+    <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Navn</th>
+    <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="employeeId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Ansatt</th>
+    <td mat-cell *matCellDef="let row">{{ row.employeeId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Dato</th>
+    <td mat-cell *matCellDef="let row">{{ row.date | datePeriod }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Handlinger</th>
+    <td mat-cell *matCellDef="let row">
+      <button mat-icon-button color="primary" (click)="edit.emit(row)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="remove.emit(row.id)" [disabled]="!row.id">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>

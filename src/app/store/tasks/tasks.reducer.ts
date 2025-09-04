@@ -14,5 +14,6 @@ export const tasksReducer = createReducer(
   on(TasksActions.loadSuccess, (s, { tasks }) => tasksAdapter.setAll(tasks, { ...s, loading: false })),
   on(TasksActions.loadFailure, (s, { error }) => ({ ...s, loading: false, error })),
   on(TasksActions.saveSuccess, (s, { task }) => tasksAdapter.upsertOne(task, s)),
+  on(TasksActions.createSuccess, (s, { task }) => tasksAdapter.addOne(task, s)),
   on(TasksActions.deleteSuccess, (s, { id }) => tasksAdapter.removeOne(id, s)),
 );
