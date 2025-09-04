@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>{{ data ? 'Rediger ansatt' : 'Ny ansatt' }}</h2>
+
+<mat-dialog-content [formGroup]="form">
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Navn</mat-label>
+    <input matInput formControlName="name" />
+    <mat-error *ngIf="form.get('name')?.hasError('required')">Påkrevd</mat-error>
+    <mat-error *ngIf="form.get('name')?.hasError('maxlength')">For langt navn</mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cancel()">Avbryt</button>
+  <button mat-flat-button color="primary" (click)="save()">
+    {{ data ? 'Oppdater' : 'Opprett' }}
+  </button>
+</mat-dialog-actions>

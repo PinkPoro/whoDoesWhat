@@ -1,0 +1,54 @@
+    <main class="container">
+      <h1>Hvem gjør hva?</h1>
+
+      <div class="grid">
+        <app-employees-component (changed)="refreshALL()"></app-employees-component>
+        <app-positions-component (changed)="refreshALL()"></app-positions-component>
+        <app-tasks-component (changed)="refreshALL()"></app-tasks-component>
+      </div>
+
+      <div class="toolbar">
+        <button mat-stroked-button color="primary" (click)="validate()">Valider</button>
+        <span *ngIf="error()" class="error">Feil: {{ error() }}</span>
+      </div>
+
+      <mat-card>
+        <div class="assign-header">
+          <h2>Tildelordning (oppgave × stilling)</h2>
+
+          <mat-form-field appearance="outline" style="width: 320px;">
+            <mat-label>Søk i tildelinger</mat-label>
+            <input matInput [value]="assignmentSearch()" (input)="applyAssignFilter($any($event.target).value)" placeholder="Oppgave, ansatt, stilling, dato" />
+            <button mat-icon-button matSuffix aria-label="clear" (click)="applyAssignFilter('')">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" class="table">
+          <ng-container matColumnDef="task">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Oppgave</th>
+            <td mat-cell *matCellDef="let r">{{ r.task }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Ansatt</th>
+            <td mat-cell *matCellDef="let r">{{ r.employee }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Stilling</th>
+            <td mat-cell *matCellDef="let r">{{ r.position }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Dato</th>
+            <td mat-cell *matCellDef="let r">{{ r.date }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedAssignColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedAssignColumns"></tr>
+        </table>
+
+      </mat-card>
+    </main>

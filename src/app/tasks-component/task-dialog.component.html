@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>
+  {{ data ? 'Rediger Oppgave' : 'Ny Oppgave' }}
+</h2>
+
+<mat-dialog-content [formGroup]="form">
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Navn</mat-label>
+    <input matInput formControlName="name" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Ansatt ID</mat-label>
+    <input matInput type="number" formControlName="employeeId" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Dato</mat-label>
+    <input matInput type="date" formControlName="date" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cancel()">Avbryt</button>
+  <button mat-flat-button color="primary" (click)="save()">
+    {{ data ? 'Oppdater' : 'Opprett' }}
+  </button>
+</mat-dialog-actions>

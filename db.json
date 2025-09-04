@@ -1,0 +1,97 @@
+{
+  "employees": [
+    {
+      "id": "1",
+      "name": "Anne"
+    },
+    {
+      "id": "2",
+      "name": "Mia"
+    },
+    {
+      "id": "3",
+      "name": "No name"
+    },
+    {
+      "id": "4",
+      "name": "Sander"
+    },
+    {
+      "id": "5",
+      "name": "Karen"
+    }
+  ],
+  "positions": [
+    {
+      "id": "12",
+      "name": "Frontend dev",
+      "employeeId": 2,
+      "period": {
+        "start": "2025-03-01",
+        "end": "2025-09-30"
+      }
+    },
+    {
+      "id": "14",
+      "name": "UI/UX",
+      "employeeId": 4,
+      "period": {
+        "start": "2025-09-25",
+        "end": "2025-10-25"
+      }
+    },
+    {
+      "id": "15",
+      "name": "HR ansvarlig",
+      "employeeId": 3,
+      "period": {
+        "start": "2025-10-25",
+        "end": "2026-10-25"
+      }
+    },
+    {
+      "id": "2548",
+      "name": "Frontend dev",
+      "employeeId": 2,
+      "period": {
+        "start": "2025-03-01",
+        "end": "2025-09-30"
+      }
+    },
+    {
+      "id": "18",
+      "name": "SW",
+      "employeeId": 5,
+      "period": {
+        "start": "2025-09-04",
+        "end": "2026-09-04"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "101",
+      "name": "ADR for auth",
+      "employeeId": 1,
+      "date": "2025-10-02"
+    },
+    {
+      "id": "102",
+      "name": "UI for dashboard",
+      "employeeId": 2,
+      "date": "2025-04-10"
+    },
+    {
+      "id": "103",
+      "name": "Fiks bugs",
+      "employeeId": 2,
+      "date": "2026-01-10"
+    },
+    {
+      "id": "104",
+      "name": "Bygg API",
+      "employeeId": 1,
+      "date": "2025-03-15"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+<mat-card class="positions">
+  <div class="positions__header">
+    <h2>Stillinger</h2>
+
+    <div class="positions__actions">
+      <button mat-flat-button color="primary" (click)="newPosition()">
+        <mat-icon>add</mat-icon> Ny stilling
+      </button>
+
+      <mat-form-field appearance="outline" style="width: 320px;">
+        <mat-label>Søk etter stilling, ansatt-id og dato</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilterFromString($event)"
+          placeholder="Søk i tabellen"
+        />
+        <button mat-icon-button matSuffix aria-label="clear" (click)="clearFilter()">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" class="positions__table">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>id</th>
+      <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Stilling</th>
+      <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="employeeId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ansatt-id</th>
+      <td mat-cell *matCellDef="let row">{{ row.employeeId }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="start">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Start</th>
+      <td mat-cell *matCellDef="let row">{{ row.period.start }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="end">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Slutt</th>
+      <td mat-cell *matCellDef="let row">{{ row.period.end }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Handlinger</th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button color="primary" (click)="edit(row)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="remove(row.id!)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+     <form class="edit-form" (ngSubmit)="save()">
+       <div class="grid">
+         <mat-form-field appearance="outline">
+           <mat-label>id</mat-label>
+           <input matInput type="number" name="id">
+         </mat-form-field>
+         <mat-form-field appearance="outline">
+           <mat-label>Navn</mat-label>
+           <input matInput [(ngModel)]="form.name" name="name" required>
+         </mat-form-field>
+         <mat-form-field appearance="outline">
+           <mat-label>Ansatt-id</mat-label>
+           <input matInput type="number" [(ngModel)]="form.employeeId" name="employeeId" required>
+         </mat-form-field>
+         <mat-form-field appearance="outline">
+           <mat-label>Start</mat-label>
+           <input matInput type="date" [(ngModel)]="form.period.start" name="start" required>
+         </mat-form-field>
+         <mat-form-field appearance="outline">
+           <mat-label>Slutt</mat-label>
+           <input matInput type="date" [(ngModel)]="form.period.end" name="end" required>
+         </mat-form-field>
+       </div>
+       <div class="actions">
+         <button mat-flat-button color="primary" type="submit">{{ form.id ? 'Oppdater' : 'Opprett' }}</button>
+         <button mat-stroked-button type="button" (click)="reset()">Nullstill</button>
+       </div>
+     </form>
+
+</mat-card>

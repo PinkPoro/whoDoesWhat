@@ -1,0 +1,19 @@
+.task {
+  margin: 16px 0;
+  background-color: #FDFDFD;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .5rem;
+    padding: 16px;
+    background-color: #FDFDFD;
+  }
+
+  &__table {
+    background-color: #FDFDFD;
+  }
+}

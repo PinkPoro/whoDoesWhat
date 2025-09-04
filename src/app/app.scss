@@ -1,0 +1,19 @@
+.container {
+  margin: 0 16px;
+  background-color: #FDFDFD;
+}
+
+.table {
+  background-color: #FDFDFD;
+}
+
+.assign-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .5rem;
+    padding: 16px;
+    background-color: #FDFDFD;
+}
