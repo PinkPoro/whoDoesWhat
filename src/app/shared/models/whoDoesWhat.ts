@@ -4,7 +4,7 @@ export interface Employee {
 }
 
 export interface Position {
-  id?: number | null;
+  id: number;
   name: string;
   employeeId: number;
   period: {

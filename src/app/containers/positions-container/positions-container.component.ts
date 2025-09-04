@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
@@ -33,54 +33,46 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PositionsContainerComponent implements OnDestroy {
   private store = inject(Store);
   private createDialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
   private destroy$ = new Subject<void>();
+  private subscriptions: Subscription = new Subscription();
+  private snackBar = inject(MatSnackBar);
 
   positions: Position[] = [];
   searchTerm = '';
   filteredPositions: Position[] = [];
-  form: Position = { id: undefined, name: '', employeeId: 0, period: { start: '', end: '' } };
+  form: Position = { id: 0, name: '', employeeId: 0, period: { start: '', end: '' } };
   showEditForm = false;
 
   constructor() {
     this.store.dispatch(PositionsActions.load());
-    this.store.select(selectAllPositions)
+    this.subscriptions.add(this.store.select(selectAllPositions)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(rows => this.positions = rows);
+      .subscribe(rows => this.positions = rows));
   }
 
   openCreateDialog() {
     const ref = this.createDialog.open(CreatePositionDialogComponent, { width: '400px' });
-    ref.afterClosed().subscribe(result => {
+    this.subscriptions.add(ref.afterClosed().subscribe(result => {
       if (result) {
         let id = result.id;
-        if (id == null) {
+        if (id == 0) {
           const maxId = this.positions.map(p => p.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
-          id = (maxId + 1);
+          id = (Number(maxId) + 1);
         }
-        const payload = { ...result, id: Number(id) };
-        const error = this.validatePosition(payload);
-        if (error) {
-          this.snackBar.open(error, 'Lukk', { duration: 4000 });
-          return;
-        }
-        this.store.dispatch(PositionsActions.create({ position: payload }));
-        this.onReset();
+        const payload = { ...result, id: id.toString() };
+        this.onCreate(payload);
       }
-    });
+    }));
   }
 
-  onSearch(term: string) {
-    this.searchTerm = term;
-    this.applyFilter();
-  }
-
-  applyFilter() {
-    const term = this.searchTerm.trim().toLowerCase();
-    this.filteredPositions = this.positions.filter(pos =>
-      pos.name.toLowerCase().includes(term) ||
-      (pos.id !== undefined && String(pos.id).includes(term))
-    );
+  onCreate(form: Position) {
+    const error = this.validatePosition(form);
+    if (error) {
+      this.snackBar.open(error, 'Lukk', { duration: 4000 });
+      return;
+    }
+    this.store.dispatch(PositionsActions.create({ position: form }));
+    this.onReset()
   }
 
   onEdit(position: Position) {
@@ -111,7 +103,20 @@ export class PositionsContainerComponent implements OnDestroy {
   }
 
   onReset() {
-    this.form = { id: undefined, name: '', employeeId: 0, period: { start: '', end: '' } };
+    this.form = { id: 0, name: '', employeeId: 0, period: { start: '', end: '' } };
+  }
+
+  onSearch(term: string) {
+    this.searchTerm = term;
+    this.applyFilter();
+  }
+
+  applyFilter() {
+    const term = this.searchTerm.trim().toLowerCase();
+    this.filteredPositions = this.positions.filter(pos =>
+      pos.name.toLowerCase().includes(term) ||
+      (pos.id !== undefined && String(pos.id).includes(term))
+    );
   }
 
   validatePosition(newPosition: Position): string | null {
@@ -143,5 +148,7 @@ export class PositionsContainerComponent implements OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+
+    this.subscriptions.unsubscribe();
   }
 }

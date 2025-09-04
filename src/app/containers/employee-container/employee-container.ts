@@ -1,22 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
-import { EmployeesTableComponent } from '../../components/employees-component/employees-table/employees-table';
+import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subject, Subscription, takeUntil } from 'rxjs';
-import { EmployeesActions } from '../../store/employees/employees.actions';
-import { Employee } from '../../shared/models/whoDoesWhat';
-import { selectAllEmployees } from '../../store/employees/employees.selectors';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { NewEmployeeDialogComponent } from '../../components/employees-component/new-employee-dialog/new-employee-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { EmployeesActions } from '../../store/employees/employees.actions';
+import { selectAllEmployees } from '../../store/employees/employees.selectors';
+
+import { EmployeesTableComponent } from '../../components/employees-component/employees-table/employees-table';
+import { NewEmployeeDialogComponent } from '../../components/employees-component/new-employee-dialog/new-employee-dialog';
+import { Employee } from '../../shared/models/whoDoesWhat';
 
 @Component({
   standalone: true,
   selector: 'app-employee-container-component',
-  imports: [CommonModule, FormsModule,EmployeesTableComponent, MatIconModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    EmployeesTableComponent,
+    MatIconModule,
+    MatButtonModule
+  ],
   templateUrl: './employee-container.html',
   styleUrl: './employee-container.scss'
 })
@@ -39,17 +48,17 @@ export class EmployeeContainerComponent implements OnDestroy {
 
   openCreateDialog() {
     const ref = this.dialog.open(NewEmployeeDialogComponent, { width: '400px' });
-    ref.afterClosed().subscribe(result => {
+    this.subscriptions.add(ref.afterClosed().subscribe(result => {
       if (result) {
         let id = result.id;
         if (id == 0) {
           const maxId = this.employees.map(e => e.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
           id = (Number(maxId) + 1);
         }
-        const newEmployee: Employee = { id: id.toString(), name: result.name };
-        this.onCreate(newEmployee);
+        const payload: Employee = { id: id.toString(), name: result.name };
+        this.onCreate(payload);
       }
-    });
+    }));
   }
 
   onCreate(form: Employee) {

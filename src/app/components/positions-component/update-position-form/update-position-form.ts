@@ -24,7 +24,7 @@ import { Position } from '../../../shared/models/whoDoesWhat';
   styleUrls: ['./update-position-form.scss']
 })
 export class UpdatePositionsFormComponent {
-  @Input() form: Position = { id: undefined, name: '', employeeId: 0, period: { start: '', end: '' } };
+  @Input() form: Position = { id: 0, name: '', employeeId: 0, period: { start: '', end: '' } };
   @Output() save = new EventEmitter<Position>();
   @Output() cancel = new EventEmitter<void>();
 

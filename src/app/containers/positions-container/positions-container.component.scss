@@ -1,7 +1,11 @@
 .positions-container{
   display: flex;
   flex-direction: column;
+  gap: 16px;
   padding: 16px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 
   &__header {
     display: flex;

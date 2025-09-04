@@ -24,7 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CreatePositionDialogComponent {
   private ref = inject(MatDialogRef<CreatePositionDialogComponent>);
-  form: Position = { id: undefined, name: '', employeeId: 0, period: { start: '', end: '' } };
+  form: Position = { id: 0, name: '', employeeId: 0, period: { start: '', end: '' } };
 
   onCreate() {
     this.ref.close(this.form);
