@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Ny ansatt</h2>
+<form (ngSubmit)="onCreate()" autocomplete="off">
+  <mat-form-field appearance="outline">
+    <mat-label>Id</mat-label>
+    <input matInput [(ngModel)]="form.id" name="id">
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Navn</mat-label>
+    <input matInput [(ngModel)]="form.name" name="name" required>
+  </mat-form-field>
+  <div class="actions">
+    <button mat-flat-button color="primary" type="submit" [disabled]="!form.name">
+      Opprett
+    </button>
+    <button mat-stroked-button type="button" (click)="onCancel()">Avbryt</button>
+  </div>
+</form>

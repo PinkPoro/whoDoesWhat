@@ -20,26 +20,16 @@ export class EmployeesEffects {
     )
   );
 
-  save$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(EmployeesActions.save),
-      mergeMap(({ employee }) => {
-        const call$ = employee.id ? this.api.updateEmployee(employee) : this.api.createEmployee(employee);
-        return call$.pipe(
-          map(e => EmployeesActions.saveSuccess({ employee: e })),
-          catchError(error => of(EmployeesActions.saveFailure({ error })))
-        );
-      })
-    )
-  );
-
-  delete$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(EmployeesActions.delete),
-      mergeMap(({ id }) => this.api.deleteEmployee(id).pipe(
-        map(() => EmployeesActions.deleteSuccess({ id })),
-        catchError(error => of(EmployeesActions.deleteFailure({ error })))
-      ))
-    )
-  );
+    create$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(EmployeesActions.create),
+        mergeMap(({ employee }) => {
+          const call$ = employee.id ? this.api.createEmployee(employee) : this.api.createEmployee(employee);
+          return call$.pipe(
+            map(p => EmployeesActions.createSuccess({ employee: p })),
+            catchError(error => of(EmployeesActions.createFailure({ error })))
+          );
+        })
+      )
+    );
 }

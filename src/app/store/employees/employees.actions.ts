@@ -7,11 +7,8 @@ export const EmployeesActions = createActionGroup({
     'Load': emptyProps(),
     'Load Success': props<{ employees: Employee[] }>(),
     'Load Failure': props<{ error: unknown }>(),
-    'Save': props<{ employee: Employee }>(),              // create (uten id) / update (med id)
-    'Save Success': props<{ employee: Employee }>(),
-    'Save Failure': props<{ error: unknown }>(),
-    'Delete': props<{ id: number }>(),
-    'Delete Success': props<{ id: number }>(),
-    'Delete Failure': props<{ error: unknown }>(),
+    'Create': props<{ employee: Employee }>(),
+    'Create Success': props<{ employee: Employee }>(),
+    'Create Failure': props<{ error: unknown }>(),
   }
 });

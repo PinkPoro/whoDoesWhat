@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { forkJoin } from 'rxjs';
 
-import { EmployeesComponent } from './components/employees-component/employees-component';
 import { TasksComponent } from './components/tasks-component/tasks-component';
 
 import { WhoDoesWhatService } from './services/who-does-what-service';

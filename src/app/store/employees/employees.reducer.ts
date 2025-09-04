@@ -24,6 +24,5 @@ export const employeesReducer = createReducer(
     employeesAdapter.setAll(employees, { ...s, loading: false })),
   on(EmployeesActions.loadFailure, (s, { error }) => ({ ...s, loading: false, error })),
 
-  on(EmployeesActions.saveSuccess, (s, { employee }) => employeesAdapter.upsertOne(employee, s)),
-  on(EmployeesActions.deleteSuccess, (s, { id }) => employeesAdapter.removeOne(id, s)),
+  on(EmployeesActions.createSuccess, (s, { employee }) => employeesAdapter.upsertOne(employee, s)),
 );

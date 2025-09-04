@@ -1,0 +1,20 @@
+<div class="employee-container">
+  <div class="employee-container__header">
+    <h1>Ansatte</h1>
+
+
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Opprett ny ansatt
+    </button>
+  </div>
+
+  <input
+  class="employee-container__search"
+  type="text"
+  placeholder="Søk etter id eller navn"
+  [(ngModel)]="searchTerm"  (ngModelChange)="onSearch($event)"
+  />
+
+  <app-employees-table-component [employee]="searchTerm ? filteredEmployees : employees"/>
+</div>

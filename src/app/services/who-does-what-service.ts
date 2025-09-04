@@ -21,17 +21,16 @@ export class WhoDoesWhatService {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks?employeeId=${employeeId}`);
   }
 
-  createEmployee(e: Omit<Employee, 'id'>) { return this.http.post<Employee>(`${this.baseUrl}/employees`, e); }
+  createEmployee(e: Employee) {
+    return this.http.post<Employee>(`${this.baseUrl}/employees`, e);
+  }
   createPosition(p: Position) {
     return this.http.post<Position>(`${this.baseUrl}/positions`, p);
   }
   createTask(t: Omit<Task, 'id'>)         { return this.http.post<Task>(`${this.baseUrl}/tasks`, t); }
 
-  updateEmployee(e: Employee) { return this.http.put<Employee>(`${this.baseUrl}/employees/${e.id}`, e); }
   updatePosition(p: Position) { return this.http.put<Position>(`${this.baseUrl}/positions/${p.id}`, p); }
   updateTask(t: Task)         { return this.http.put<Task>(`${this.baseUrl}/tasks/${t.id}`, t); }
-
-  deleteEmployee(id: number) { return this.http.delete<void>(`${this.baseUrl}/employees/${id}`); }
   deletePosition(id: number) { return this.http.delete<void>(`${this.baseUrl}/positions/${id}`); }
   deleteTask(id: number)     { return this.http.delete<void>(`${this.baseUrl}/tasks/${id}`); }
 }
