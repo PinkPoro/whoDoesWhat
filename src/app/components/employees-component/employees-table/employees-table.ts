@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
+
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
 import { Employee } from '../../../shared/models/whoDoesWhat';
 
 @Component({
