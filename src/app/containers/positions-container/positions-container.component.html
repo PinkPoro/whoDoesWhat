@@ -1,0 +1,26 @@
+<div class="positions-container">
+
+  <div class="positions-container__header">
+    <h1>Stillinger</h1>
+
+
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Opprett ny stilling
+    </button>
+  </div>
+
+  <input
+  class="positions-container__search"
+  type="text"
+  placeholder="Søk etter id eller navn"
+  [(ngModel)]="searchTerm"
+  (ngModelChange)="onSearch($event)"/>
+
+  <app-positions-table-component [positions]="searchTerm ? filteredPositions : positions" (edit)="onEdit($event)" (remove)="onRemove($event)"/>
+
+  @if(showEditForm) {
+    <app-update-position-form-component [form]="form" (save)="onSave(form)" (cancel)="onCancel()"/>
+  }
+
+</div>

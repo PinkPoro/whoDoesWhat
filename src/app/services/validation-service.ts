@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Employee, Position, Task, Assignment } from '../models/whoDoesWhat';
+import { Employee, Position, Task, Assignment } from '../shared/models/whoDoesWhat';
 
 @Injectable({ providedIn: 'root' })
 export class ValidationService {

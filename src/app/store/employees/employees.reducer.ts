@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Employee } from '../../models/whoDoesWhat';
+import { Employee } from '../../shared/models/whoDoesWhat';
 import { EmployeesActions } from './employees.actions';
 
 

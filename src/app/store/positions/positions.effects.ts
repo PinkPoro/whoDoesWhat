@@ -13,7 +13,7 @@ export class PositionsEffects {
   load$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PositionsActions.load),
-      mergeMap(() => this.api.positions().pipe(
+      mergeMap(() => this.api.getPositions().pipe(
         map(positions => PositionsActions.loadSuccess({ positions })),
         catchError(error => of(PositionsActions.loadFailure({ error })))
       ))
@@ -28,6 +28,19 @@ export class PositionsEffects {
         return call$.pipe(
           map(p => PositionsActions.saveSuccess({ position: p })),
           catchError(error => of(PositionsActions.saveFailure({ error })))
+        );
+      })
+    )
+  );
+
+  create$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PositionsActions.create),
+      mergeMap(({ position }) => {
+        const call$ = position.id ? this.api.createPosition(position) : this.api.createPosition(position);
+        return call$.pipe(
+          map(p => PositionsActions.createSuccess({ position: p })),
+          catchError(error => of(PositionsActions.createFailure({ error })))
         );
       })
     )

@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { TasksActions } from './tasks.actions';
-import { Task } from '../../models/whoDoesWhat';
+import { Task } from '../../shared/models/whoDoesWhat';
 
 
 export interface TasksState extends EntityState<Task> { loading: boolean; error?: unknown; }

@@ -1,0 +1,43 @@
+<table mat-table [dataSource]="dataSource" matSort [trackBy]="trackById">
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>id</th>
+    <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Stillingsnavn</th>
+    <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="employeeId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Ansatt-id</th>
+    <td mat-cell *matCellDef="let row">{{ row.employeeId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="period">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Periode</th>
+    <td mat-cell *matCellDef="let row">
+      {{ row.period.start | datePeriod}} - {{ row.period.end | datePeriod}}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Handlinger</th>
+    <td mat-cell *matCellDef="let row">
+
+      <button mat-icon-button color="primary" (click)="edit.emit(row)">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button mat-icon-button color="warn" (click)="remove.emit(row.id!)">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>

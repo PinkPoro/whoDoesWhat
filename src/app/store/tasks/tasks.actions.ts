@@ -1,5 +1,5 @@
 import { createActionGroup, props, emptyProps } from '@ngrx/store';
-import { Task } from '../../models/whoDoesWhat';
+import { Task } from '../../shared/models/whoDoesWhat';
 
 
 export const TasksActions = createActionGroup({

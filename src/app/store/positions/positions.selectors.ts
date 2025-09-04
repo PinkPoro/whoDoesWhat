@@ -6,5 +6,5 @@ export const {
   selectAll: selectAllPositions,
   selectEntities: selectPositionEntities,
   selectIds: selectPositionIds,
-  selectTotal: selectPositionsTotal
+  selectTotal: selectPositionsTotal,
 } = positionsAdapter.getSelectors(selectPositionsState);

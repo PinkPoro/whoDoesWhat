@@ -1,27 +1,25 @@
 import { Component, inject, signal, computed, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { forkJoin } from 'rxjs';
 
-import { Store } from '@ngrx/store';
-
-import { EmployeesComponent } from './employees-component/employees-component';
-import { PositionsComponent } from './positions-component/positions-component';
-import { TasksComponent } from './tasks-component/tasks-component';
-
-import { MaterialModule } from './shared/modules/material/material-module';
-
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { EmployeesComponent } from './components/employees-component/employees-component';
+import { TasksComponent } from './components/tasks-component/tasks-component';
 
 import { WhoDoesWhatService } from './services/who-does-what-service';
 import { ValidationService } from './services/validation-service';
-import { Employee, Position, Task } from './models/whoDoesWhat';
+import { Employee, Position, Task } from './shared/models/whoDoesWhat';
 
 import { selectAllEmployees } from './store/employees/employees.selectors';
 import { selectAllPositions } from './store/positions/positions.selectors';
 import { selectAllTasks } from './store/tasks/tasks.selectors';
+
+import { MaterialModule } from './shared/modules/material/material-module';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { WhoDoesWhatContainerComponent } from './containers/who-does-what/who-does-what-container.component';
 
 
 type AssignmentRow = { task: string; date: string; employee: string; position: string };
@@ -33,9 +31,8 @@ type AssignmentRow = { task: string; date: string; employee: string; position: s
     CommonModule,
     FormsModule,
     MaterialModule,
-    EmployeesComponent,
-    PositionsComponent,
-    TasksComponent
+    WhoDoesWhatContainerComponent
+
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
@@ -80,7 +77,7 @@ export class AppComponent implements AfterViewInit {
   refreshALL() {
     forkJoin({
       employees: this.data.employees(),
-      positions: this.data.positions(),
+      positions: this.data.getPositions(),
       tasks: this.data.tasks(),
     }).subscribe(({ employees, positions, tasks }) => {
       this.employees.set(employees);
