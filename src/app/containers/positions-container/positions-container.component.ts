@@ -1,20 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
-import { CreatePositionDialogComponent } from '../../components/positions-component/create-position-dialog/create-position-dialog';
-import { UpdatePositionsFormComponent } from '../../components/positions-component/update-position-form/update-position-form';
-import { PositionsTableComponent } from '../../components/positions-component/positions-table/positions-table';
-import { Position } from '../../shared/models/whoDoesWhat';
 import { PositionsActions } from '../../store/positions/positions.actions';
-import { selectAllPositions } from '../../store/positions/positions.selectors';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { CreatePositionDialogComponent } from '../../components/positions-component/create-position-dialog/create-position-dialog';
+import { UpdatePositionsFormComponent } from '../../components/positions-component/update-position-form/update-position-form';
+import { PositionsTableComponent } from '../../components/positions-component/positions-table/positions-table';
+import { Position } from '../../shared/models/whoDoesWhat';
 
 @Component({
   standalone: true,
@@ -31,36 +31,31 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrl: './positions-container.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PositionsContainerComponent implements OnDestroy {
+export class PositionsContainerComponent implements OnDestroy, OnChanges {
+  @Input() positions: Position[] = [];
+
   private store = inject(Store);
   private createDialog = inject(MatDialog);
-  private destroy$ = new Subject<void>();
   private subscriptions: Subscription = new Subscription();
   private snackBar = inject(MatSnackBar);
 
-  positions: Position[] = [];
   searchTerm = '';
   filteredPositions: Position[] = [];
   form: Position = { id: 0, name: '', employeeId: 0, period: { start: '', end: '' } };
   showEditForm = false;
 
-  constructor() {
-    this.store.dispatch(PositionsActions.load());
-    this.subscriptions.add(this.store.select(selectAllPositions)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(rows => {this.positions = rows; this.applyFilter();}));
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['positions']) {
+      this.applyFilter();
+    }
   }
 
   openCreateDialog() {
     const ref = this.createDialog.open(CreatePositionDialogComponent, { width: '400px' });
     this.subscriptions.add(ref.afterClosed().subscribe(result => {
       if (result) {
-        let id = result.id;
-        if (id == 0) {
-          const maxId = this.positions.map(p => p.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
-          id = (Number(maxId) + 1);
-        }
-        const payload = { ...result, id: id.toString() };
+        const id = autoId(result.id, this.positions);
+        const payload = { ...result, id: id };
         this.onCreate(payload);
       }
     }));
@@ -145,9 +140,14 @@ export class PositionsContainerComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-
     this.subscriptions.unsubscribe();
   }
+}
+
+function autoId(id: number, position: Position[]): string {
+  if (id == 0) {
+    const maxId = position.map(p => p.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
+    id = (Number(maxId) + 1);
+  }
+  return id.toString();
 }

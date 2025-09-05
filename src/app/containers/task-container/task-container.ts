@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
-import { TasksTableComponent } from '../../components/tasks-component/tasks-table/tasks-table';
-import { Store } from '@ngrx/store';
-import { Subject, Subscription, takeUntil } from 'rxjs';
-import { Task } from '../../shared/models/whoDoesWhat';
-import { TasksActions } from '../../store/tasks/tasks.actions';
+import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { selectAllTasks } from '../../store/tasks/tasks.selectors';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateTaskDialogComponent } from '../../components/tasks-component/create-task-dialog/create-task-dialog';
-import { EditTaskComponent } from '../../components/tasks-component/edit-task-component/edit-task-component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { TasksActions } from '../../store/tasks/tasks.actions';
+
+import { TasksTableComponent } from '../../components/tasks-component/tasks-table/tasks-table';
+import { EditTaskComponent } from '../../components/tasks-component/edit-task-component/edit-task-component';
+import { CreateTaskDialogComponent } from '../../components/tasks-component/create-task-dialog/create-task-dialog';
+import { Task } from '../../shared/models/whoDoesWhat';
 
 @Component({
   standalone: true,
@@ -28,36 +30,31 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './task-container.html',
   styleUrls: ['./task-container.scss']
 })
-export class TaskContainerComponent implements OnDestroy {
+export class TaskContainerComponent implements OnDestroy, OnChanges {
+  @Input() task: Task[] = [];
+
   private store = inject(Store);
   private dialog = inject(MatDialog);
   private subscriptions: Subscription = new Subscription();
-  private destroy$ = new Subject<void>();
   private snackBar = inject(MatSnackBar);
 
-  task: Task[] = [];
   searchTerm = '';
   filteredTasks: Task[] = [];
   form: Task = { id: 0, name: '', employeeId: 0, date: '' };
   showEditForm = false;
 
-  constructor() {
-    this.store.dispatch(TasksActions.load());
-    this.subscriptions.add(this.store.select(selectAllTasks)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(rows => {this.task = rows; this.applyFilter();}));
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['task']) {
+      this.applyFilter();
+    }
   }
 
   openCreateDialog() {
     const ref = this.dialog.open(CreateTaskDialogComponent, { width: '400px' });
     this.subscriptions.add(ref.afterClosed().subscribe(result => {
       if (result) {
-        let id = result.id;
-        if (id == 0) {
-          const maxId = this.task.map(p => p.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
-          id = (Number(maxId) + 1);
-        }
-        const payload = { ...result, id: id.toString() };
+        const id = autoId(result.id, this.task);
+        const payload = { ...result, id: id };
         this.onCreate(payload);
       }
     }));
@@ -114,7 +111,7 @@ export class TaskContainerComponent implements OnDestroy {
     );
   }
 
-  validateTask(newTask: Task, isEdit: boolean = false): string | null {
+  validateTask(newTask: Task): string | null {
     const newDate = normalizeDate(newTask.date);
     const duplicate = this.task.some(t =>
       t.name.trim().toLowerCase() === newTask.name.trim().toLowerCase() &&
@@ -128,9 +125,6 @@ export class TaskContainerComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-
     this.subscriptions.unsubscribe();
   }
 }
@@ -140,4 +134,12 @@ function normalizeDate(date: string): string {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date);
   if (match) return `${match[3]}-${match[2]}-${match[1]}`;
   return date;
+}
+
+function autoId(id: number, tasks: Task[]): string {
+  if (id == 0) {
+    const maxId = tasks.map(p => p.id ?? 0).reduce((max, curr) => curr > max ? curr : max, 0);
+    id = (Number(maxId) + 1);
+  }
+  return id.toString();
 }

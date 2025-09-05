@@ -31,6 +31,14 @@
     {
       "id": "8",
       "name": "Test"
+    },
+    {
+      "id": "9",
+      "name": "Nyansatt"
+    },
+    {
+      "id": "10",
+      "name": "Amalie"
     }
   ],
   "positions": [
@@ -140,6 +148,18 @@
       "name": "Bygg API",
       "employeeId": 1,
       "date": "2025-03-15"
+    },
+    {
+      "id": "105",
+      "name": "Fiks bugs",
+      "employeeId": 8,
+      "date": "05.09.2025"
+    },
+    {
+      "id": "106",
+      "name": "Test",
+      "employeeId": 10,
+      "date": "10.09.2025"
     }
   ]
 }

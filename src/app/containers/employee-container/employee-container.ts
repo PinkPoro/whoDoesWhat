@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { EmployeesActions } from '../../store/employees/employees.actions';
-import { selectAllEmployees } from '../../store/employees/employees.selectors';
 
 import { EmployeesTableComponent } from '../../components/employees-component/employees-table/employees-table';
 import { NewEmployeeDialogComponent } from '../../components/employees-component/new-employee-dialog/new-employee-dialog';
@@ -29,21 +28,21 @@ import { Employee } from '../../shared/models/whoDoesWhat';
   templateUrl: './employee-container.html',
   styleUrl: './employee-container.scss'
 })
-export class EmployeeContainerComponent implements OnDestroy {
+export class EmployeeContainerComponent implements OnDestroy, OnChanges {
+  @Input() employees: Employee[] = [];
+
   private store = inject(Store);
   private dialog = inject(MatDialog);
-  private destroy$ = new Subject<void>();
   private subscriptions: Subscription = new Subscription();
   private snackBar = inject(MatSnackBar);
 
-  employees: Employee[] = [];
   searchTerm = '';
   filteredEmployees: Employee[] = [];
 
-  constructor() {
-    this.store.dispatch(EmployeesActions.load());
-    this.subscriptions.add(this.store.select(selectAllEmployees).pipe(
-      takeUntil(this.destroy$)).subscribe(rows => this.employees = rows));
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['employees']) {
+      this.applyFilter();
+    }
   }
 
   openCreateDialog() {
@@ -94,9 +93,6 @@ export class EmployeeContainerComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-
     this.subscriptions.unsubscribe();
   }
 }
