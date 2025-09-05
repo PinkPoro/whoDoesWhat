@@ -1,0 +1,10 @@
+.new-employee-dialog {
+  margin: 16px;
+  padding: 0 16px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
