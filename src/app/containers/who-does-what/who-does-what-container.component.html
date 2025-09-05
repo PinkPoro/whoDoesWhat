@@ -5,7 +5,7 @@
 
     <app-employee-container-component
     [employees]="getEmployees()"
-    (create)="onCreateEmployee($event)"/>
+    />
     <app-task-container-component
     [task]="getTasks()"
     (save)="onSaveTask($event)"
@@ -25,7 +25,5 @@
   <app-assignments-component
   [assignments]="assignments"
   />
-  <div class="who-does-what-container__assignments">
-  </div>
 
 </div>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit, Signal } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, on } from '@ngrx/store';
 
 import { ValidationService } from '../../services/validation-service';
 
@@ -72,15 +72,6 @@ export class WhoDoesWhatContainerComponent implements OnInit{
     });
   }
 
-  onCreateEmployee(employee: Employee) {
-    const error = this.validationService.validateEmployee(employee, this.employees);
-    if (error) {
-      this.snackBar.open(error, 'Lukk', { duration: 4000 });
-      return;
-    }
-    this.store.dispatch(EmployeesActions.create({ employee: employee }));
-  }
-
   onCreatePosition(position: Position) {
     const error = this.validationService.validatePosition(position, this.positions);
     if (error) {
@@ -140,8 +131,6 @@ export class WhoDoesWhatContainerComponent implements OnInit{
   onRemoveTask(id: number) {
     this.store.dispatch(TasksActions.delete({ id }));
   }
-
-
 
   getPositionsForEmployee(employeeId: number): Position[] {
     return this.positions.filter(position => position.employeeId == employeeId);
