@@ -21,7 +21,9 @@ export interface Task {
 }
 
 export interface Assignment {
-  task: Task;
-  employee: Employee | null;
-  position: Position | null;
+  employee: Employee;
+  positions: {
+    position: Position;
+    tasks: Task[];
+  }[];
 }

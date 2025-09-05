@@ -1,15 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { Store } from '@ngrx/store';
-
-import { PositionsActions } from '../../store/positions/positions.actions';
 
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { CreatePositionDialogComponent } from '../../components/positions-component/create-position-dialog/create-position-dialog';
 import { UpdatePositionsFormComponent } from '../../components/positions-component/update-position-form/update-position-form';
@@ -34,10 +30,12 @@ import { Position } from '../../shared/models/whoDoesWhat';
 export class PositionsContainerComponent implements OnDestroy, OnChanges {
   @Input() positions: Position[] = [];
 
-  private store = inject(Store);
+  @Output() create = new EventEmitter<Position>();
+  @Output() save = new EventEmitter<Position>();
+  @Output() remove = new EventEmitter<number>();
+
   private createDialog = inject(MatDialog);
   private subscriptions: Subscription = new Subscription();
-  private snackBar = inject(MatSnackBar);
 
   searchTerm = '';
   filteredPositions: Position[] = [];
@@ -56,19 +54,9 @@ export class PositionsContainerComponent implements OnDestroy, OnChanges {
       if (result) {
         const id = autoId(result.id, this.positions);
         const payload = { ...result, id: id };
-        this.onCreate(payload);
+        this.create.emit(payload);
       }
     }));
-  }
-
-  onCreate(form: Position) {
-    const error = this.validatePosition(form);
-    if (error) {
-      this.snackBar.open(error, 'Lukk', { duration: 4000 });
-      return;
-    }
-    this.store.dispatch(PositionsActions.create({ position: form }));
-    this.onReset()
   }
 
   onEdit(position: Position) {
@@ -77,16 +65,11 @@ export class PositionsContainerComponent implements OnDestroy, OnChanges {
   }
 
   onRemove(id: number) {
-    this.store.dispatch(PositionsActions.delete({ id }));
+    this.remove.emit(id);
   }
 
   onSave(form: Position) {
-    const error = this.validatePosition(form);
-    if (error) {
-      this.snackBar.open(error, 'Lukk', { duration: 4000 });
-      return;
-    }
-    this.store.dispatch(PositionsActions.save({ position: form }));
+    this.save.emit(form);
     this.onReset();
     this.showEditForm = false;
   }
@@ -111,32 +94,6 @@ export class PositionsContainerComponent implements OnDestroy, OnChanges {
       pos.name.toLowerCase().includes(term) ||
       (pos.id !== undefined && String(pos.id).includes(term))
     );
-  }
-
-  validatePosition(newPosition: Position): string | null {
-
-    const duplicate = this.positions.some(pos =>
-      pos.name.trim().toLowerCase() === newPosition.name.trim().toLowerCase() &&
-      pos.employeeId === newPosition.employeeId &&
-      pos.id !== newPosition.id
-    );
-    if (duplicate) {
-      return 'Duplikat stilling: samme navn og ansatt-id finnes allerede.';
-    }
-
-    const newStart = new Date(newPosition.period.start);
-    const newEnd = new Date(newPosition.period.end);
-    const overlap = this.positions.some(pos =>
-      pos.employeeId === newPosition.employeeId &&
-      pos.id !== newPosition.id &&
-      newStart <= new Date(pos.period.end) &&
-      newEnd >= new Date(pos.period.start)
-    );
-    if (overlap) {
-      return 'Overlappende periode for denne ansatt-id.';
-    }
-
-    return null;
   }
 
   ngOnDestroy() {

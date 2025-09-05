@@ -1,65 +1,93 @@
-import { Employee, Position, Task } from "../models/whoDoesWhat";
-import { ValidationService } from "./validation-service";
+import { ValidationService } from './validation-service';
+import { Employee, Position, Task } from '../shared/models/whoDoesWhat';
 
+describe('ValidationService', () => {
+  let service: ValidationService;
 
-describe('ValidatorService', () => {
-  const svc = new ValidationService();
-
-  const emp: Employee = { id: 1, name: 'Test' };
-  const pos: Position = { id: 1, name: 'Dev', employeeId: 1,
-    period: { start: '2025-01-01', end: '2025-12-31' } };
-  const task: Task = { id: 1, name: 'Oppg', employeeId: 1, date: '2025-06-01' };
-
-  it('enkelt tilfelle matcher', () => {
-    expect(() => svc.validate([emp], [pos], [task])).not.toThrow();
-    const a = svc.assign([task], [pos])[0];
-    expect(a.positionId).toBe(1);
+  beforeEach(() => {
+    service = new ValidationService();
   });
 
-  it('grenser: dato == start og dato == slutt', () => {
-    const t1: Task = { ...task, id: 2, date: '2025-01-01' };
-    const t2: Task = { ...task, id: 3, date: '2025-12-31' };
-    svc.validate([emp], [pos], [t1, t2]);
-    const asg = svc.assign([t1, t2], [pos]);
-    expect(asg[0].positionId).toBe(1);
-    expect(asg[1].positionId).toBe(1);
+  describe('normalizeDate', () => {
+    it('should return YYYY-MM-DD if already in that format', () => {
+      expect((service as any).normalizeDate('2025-01-01')).toBe('2025-01-01');
+    });
+    it('should convert DD.MM.YYYY to YYYY-MM-DD', () => {
+      expect((service as any).normalizeDate('05.09.2025')).toBe('2025-09-05');
+    });
+    it('should return input if format is unrecognized', () => {
+      expect((service as any).normalizeDate('2025/01/01')).toBe('2025/01/01');
+    });
   });
 
-  it('oppgave utenfor periode ignoreres (positionId undefined)', () => {
-    const t: Task = { ...task, id: 4, date: '2026-01-01' };
-    svc.validate([emp], [pos], [t]);
-    const a = svc.assign([t], [pos])[0];
-    expect(a.positionId).toBeUndefined();
+  describe('normalizePeriod', () => {
+    it('should normalize both start and end', () => {
+      const period = { start: '05.09.2025', end: '2025-12-31' };
+      expect(service.normalizePeriod(period)).toEqual({ start: '2025-09-05', end: '2025-12-31' });
+    });
   });
 
-  it('oppgave går til riktig stilling når flere ikke overlapper', () => {
-    const p1: Position = { id: 11, name: 'Dev', employeeId: 1,
-      period: { start: '2025-01-01', end: '2025-06-30' }};
-    const p2: Position = { id: 12, name: 'Ark', employeeId: 1,
-      period: { start: '2025-07-01', end: '2025-12-31' }};
-    const t1: Task = { id: 21, name: 'A', employeeId: 1, date: '2025-02-01' };
-    const t2: Task = { id: 22, name: 'B', employeeId: 1, date: '2025-08-01' };
-
-    svc.validate([emp], [p1, p2], [t1, t2]);
-    const asg = svc.assign([t1, t2], [p1, p2]);
-    expect(asg.find(a => a.taskId === 21)!.positionId).toBe(11);
-    expect(asg.find(a => a.taskId === 22)!.positionId).toBe(12);
+  describe('validateEmployee', () => {
+    it('should return error for duplicate employee name', () => {
+      const employees: Employee[] = [{ id: 1, name: 'Test' }];
+      const newEmp: Employee = { id: 2, name: 'test' };
+      expect(service.validateEmployee(newEmp, employees)).toBe('En ansatt med dette navnet finnes allerede.');
+    });
+    it('should return null for unique employee', () => {
+      const employees: Employee[] = [{ id: 1, name: 'Test' }];
+      const newEmp: Employee = { id: 2, name: 'Unique' };
+      expect(service.validateEmployee(newEmp, employees)).toBeNull();
+    });
   });
 
-  it('kaster på overlappende stillinger', () => {
-    const p1: Position = { id: 31, name: 'A', employeeId: 1,
-      period: { start: '2025-01-01', end: '2025-06-30' }};
-    const p2: Position = { id: 32, name: 'B', employeeId: 1,
-      period: { start: '2025-06-01', end: '2025-12-31' }};
-    expect(() => svc.validate([emp], [p1, p2], [task])).toThrow();
+  describe('validatePosition', () => {
+    const base: Position = {
+      id: 1, name: 'Dev', employeeId: 1,
+      period: { start: '2025-01-01', end: '2025-12-31' }
+    };
+    it('should return error for duplicate position', () => {
+      const positions = [base];
+      const newPos = { ...base, id: 2 };
+      expect(service.validatePosition(newPos, positions)).toBe('Duplikat stilling: samme navn og ansatt-id finnes allerede.');
+    });
+    it('should return error for overlapping period', () => {
+      const positions = [base];
+      const newPos = { ...base, id: 2, period: { start: '2025-06-01', end: '2026-01-01' } };
+      expect(service.validatePosition(newPos, positions)).toBe('Overlappende periode for denne ansatt-id.');
+    });
+    it('should return null for valid position', () => {
+      const positions = [base];
+      const newPos = { ...base, id: 2, name: 'Lead', period: { start: '2026-01-01', end: '2026-12-31' } };
+      expect(service.validatePosition(newPos, positions)).toBeNull();
+    });
   });
 
-  it('kaster på duplikater (ansatte/oppgaver/stillinger)', () => {
-    const e2 = { ...emp };
-    const t2 = { ...task };
-    const p2 = { ...pos };
-    expect(() => svc.validate([emp, e2], [pos], [task])).toThrow();
-    expect(() => svc.validate([emp], [pos, p2], [task])).toThrow();
-    expect(() => svc.validate([emp], [pos], [task, t2])).toThrow();
+  describe('validateTask', () => {
+    const positions: Position[] = [
+      { id: 1, name: 'Dev', employeeId: 1, period: { start: '2025-01-01', end: '2025-12-31' } }
+    ];
+    const tasks: Task[] = [
+      { id: 1, name: 'Task', employeeId: 1, date: '2025-06-01' }
+    ];
+    it('should return error for duplicate task', () => {
+      const newTask: Task = { id: 2, name: 'Task', employeeId: 1, date: '2025-06-01' };
+      expect(service.validateTask(newTask, tasks, positions)).toBe('Duplikat oppgave');
+    });
+    it('should return error if employee has no positions', () => {
+      const newTask: Task = { id: 2, name: 'Task2', employeeId: 2, date: '2025-06-01' };
+      expect(service.validateTask(newTask, [], positions)).toBe('Denne ansatte har ingen stillinger.');
+    });
+    it('should return error if task is outside all position periods', () => {
+      const newTask: Task = { id: 2, name: 'Task2', employeeId: 1, date: '2026-01-01' };
+      expect(service.validateTask(newTask, [], positions)).toBe('Oppgaven må være innenfor en av ansattens stillingsperioder.');
+    });
+    it('should return null for valid task', () => {
+      const newTask: Task = { id: 2, name: 'Task2', employeeId: 1, date: '2025-07-01' };
+      expect(service.validateTask(newTask, tasks, positions)).toBeNull();
+    });
+    it('should handle date format normalization', () => {
+      const newTask: Task = { id: 3, name: 'Task3', employeeId: 1, date: '01.06.2025' };
+      expect(service.validateTask(newTask, [], positions)).toBeNull();
+    });
   });
 });

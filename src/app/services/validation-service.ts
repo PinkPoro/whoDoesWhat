@@ -1,99 +1,86 @@
 import { Injectable } from '@angular/core';
-import { Employee, Position, Task, Assignment } from '../shared/models/whoDoesWhat';
+import { Employee, Position, Task } from '../shared/models/whoDoesWhat';
 
 @Injectable({ providedIn: 'root' })
 export class ValidationService {
 
-  validate(employees: Employee[], positions: Position[], tasks: Task[]): void {
-    this.ensureUniqueIds(employees.map(e => e.id), 'Employees');
-    this.ensureUniqueIds(positions.map(p => p.id!).filter(Boolean), 'Positions');
-    this.ensureUniqueIds(tasks.map(t => t.id!).filter(Boolean), 'Tasks');
-
-    const employeesById = new Map(employees.map(e => [e.id, e]));
-
-    for (const p of positions) {
-      if (!employeesById.has(p.employeeId)) {
-        throw new Error(`Position ${p.id ?? '(ny)'} peker til ukjent employeeId=${p.employeeId}`);
-      }
-      if (!this.isValidDateRange(p.period.start, p.period.end)) {
-        throw new Error(`Position ${p.id ?? '(ny)'} har ugyldig periode: ${p.period.start} → ${p.period.end}`);
-      }
+  validateEmployee(newEmployee: Employee, employees: Employee[]): string | null {
+    const duplicate = employees.some(emp =>
+      emp.name.trim().toLowerCase() === newEmployee.name.trim().toLowerCase()
+    );
+    if (duplicate) {
+      return 'En ansatt med dette navnet finnes allerede.';
     }
-
-    this.assertNoOverlapsForSameTitle(positions);
-
-    for (const t of tasks) {
-      const emp = employeesById.get(t.employeeId);
-      if (!emp) throw new Error(`Task ${t.id ?? '(ny)'} peker til ukjent employeeId=${t.employeeId}`);
-      if (!this.isIsoDate(t.date)) throw new Error(`Task ${t.id ?? '(ny)'} har ugyldig dato: ${t.date}`);
-
-      const hasPosition = positions.some(
-        p => p.employeeId === t.employeeId && this.dateInRange(t.date, p.period.start, p.period.end)
-      );
-      if (!hasPosition) {
-        throw new Error(
-          `Task ${t.id ?? '(ny)'} (${t.name}) @ ${t.date} har ingen gyldig stilling for employeeId=${t.employeeId}`
-        );
-      }
-    }
+    return null;
   }
 
-  buildAssignments(employees: Employee[], positions: Position[], tasks: Task[]): Assignment[] {
-    return tasks.map(task => {
-      const employee = employees.find(e => e.id === task.employeeId) ?? null;
-      const position = positions.find(
-        p =>
-          p.employeeId === task.employeeId &&
-          this.dateInRange(task.date, p.period.start, p.period.end)
-      ) ?? null;
-      return { task, employee, position };
+  validatePosition(newPosition: Position, positions: Position[]): string | null {
+    const duplicate = positions.some(pos =>
+      pos.name.trim().toLowerCase() === newPosition.name.trim().toLowerCase() &&
+      pos.employeeId === newPosition.employeeId &&
+      pos.id !== newPosition.id
+    );
+    if (duplicate) {
+      return 'Duplikat stilling: samme navn og ansatt-id finnes allerede.';
+    }
+
+    const newStart = new Date(newPosition.period.start);
+    const newEnd = new Date(newPosition.period.end);
+    const overlap = positions.some(pos =>
+      pos.employeeId === newPosition.employeeId &&
+      pos.id !== newPosition.id &&
+      newStart <= new Date(pos.period.end) &&
+      newEnd >= new Date(pos.period.start)
+    );
+    if (overlap) {
+      return 'Overlappende periode for denne ansatt-id.';
+    }
+
+    return null;
+  }
+
+  validateTask(newTask: Task, tasks: Task[], positions: Position[]): string | null {
+    const newDate = this.normalizeDate(newTask.date);
+
+    const duplicate = tasks.some(t =>
+      t.name.trim().toLowerCase() === newTask.name.trim().toLowerCase() &&
+      t.employeeId === newTask.employeeId &&
+      this.normalizeDate(t.date) === newDate
+    );
+    if (duplicate) {
+      return 'Duplikat oppgave';
+    }
+
+    const employeePositions = positions.filter(pos => pos.employeeId == newTask.employeeId);
+    if (employeePositions.length === 0) {
+      return 'Denne ansatte har ingen stillinger.';
+    }
+
+    const taskDate = new Date(newDate);
+    const isWithinPeriod = employeePositions.some(pos => {
+      const start = new Date(pos.period.start);
+      const end = new Date(pos.period.end);
+      return taskDate >= start && taskDate <= end;
     });
+    if (!isWithinPeriod) {
+      return 'Oppgaven må være innenfor en av ansattens stillingsperioder.';
+    }
+
+    return null;
   }
 
-  private ensureUniqueIds(ids: (number|undefined)[], label: string) {
-      const seen = new Set<number>();
-      for (const id of ids) {
-        if (id == null) continue;
-        if (seen.has(id)) throw new Error(`${label}: duplisert id=${id}`);
-        seen.add(id);
-      }
-    }
+  normalizeDate(date: string): string {
+    // Accepts 'YYYY-MM-DD' or 'DD.MM.YYYY' and returns 'YYYY-MM-DD'
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+    const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date);
+    if (match) return `${match[3]}-${match[2]}-${match[1]}`;
+    return date;
+  }
 
-    private isIsoDate(s: string): boolean {
-      // enkel sjekk: YYYY-MM-DD
-      return /^\d{4}-\d{2}-\d{2}$/.test(s);
-    }
-
-    private isValidDateRange(start: string, end: string): boolean {
-      if (!this.isIsoDate(start) || !this.isIsoDate(end)) return false;
-      return start <= end;
-    }
-
-    private dateInRange(d: string, start: string, end: string): boolean {
-      return d >= start && d <= end;
-    }
-
-    private assertNoOverlapsForSameTitle(positions: Position[]) {
-      // grupper per employeeId + title (name)
-      const groups = new Map<string, Position[]>();
-      for (const p of positions) {
-        const key = `${p.employeeId}::${p.name.toLowerCase()}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key)!.push(p);
-      }
-      // sortér og sjekk overlapp
-      for (const [key, list] of groups) {
-        const sorted = [...list].sort((a, b) => a.period.start.localeCompare(b.period.start));
-        for (let i = 1; i < sorted.length; i++) {
-          const prev = sorted[i - 1];
-          const curr = sorted[i];
-          if (prev.period.end >= curr.period.start) {
-            throw new Error(
-              `Overlappende perioder for ${key.replace('::', ' / ')}: ` +
-              `[${prev.period.start}→${prev.period.end}] og [${curr.period.start}→${curr.period.end}]`
-            );
-          }
-        }
-      }
-    }
+  normalizePeriod(period: { start: string; end: string }): { start: string; end: string } {
+    return {
+      start: this.normalizeDate(period.start),
+      end: this.normalizeDate(period.end)
+    };
+  }
 }

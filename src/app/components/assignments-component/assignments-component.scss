@@ -1,0 +1,26 @@
+.assignments-component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 16px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+
+  &__header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  &__table {
+    background-color: #fff;
+  }
+
+  &__search {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}

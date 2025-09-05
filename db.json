@@ -10,7 +10,7 @@
     },
     {
       "id": "3",
-      "name": "No name"
+      "name": "Vegard"
     },
     {
       "id": "4",
@@ -23,29 +23,13 @@
     {
       "id": "6",
       "name": "Heidi"
-    },
-    {
-      "id": "7",
-      "name": "Karl"
-    },
-    {
-      "id": "8",
-      "name": "Test"
-    },
-    {
-      "id": "9",
-      "name": "Nyansatt"
-    },
-    {
-      "id": "10",
-      "name": "Amalie"
     }
   ],
   "positions": [
     {
       "id": "12",
       "name": "Frontend dev",
-      "employeeId": 2,
+      "employeeId": 4,
       "period": {
         "start": "2025-03-01",
         "end": "2025-09-30"
@@ -54,19 +38,19 @@
     {
       "id": "14",
       "name": "UI/UX",
-      "employeeId": 4,
+      "employeeId": 2,
       "period": {
-        "start": "2025-09-25",
-        "end": "2025-10-25"
+        "start": "2025-09-01",
+        "end": "2025-12-30"
       }
     },
     {
       "id": "15",
       "name": "HR ansvarlig",
-      "employeeId": 3,
+      "employeeId": 1,
       "period": {
-        "start": "2025-10-25",
-        "end": "2026-10-25"
+        "start": "2025-01-01",
+        "end": "2025-12-31"
       }
     },
     {
@@ -77,57 +61,12 @@
         "start": "2025-09-04",
         "end": "2026-09-04"
       }
-    },
-    {
-      "id": "19",
-      "name": "SW",
-      "employeeId": 3,
-      "period": {
-        "start": "24.10.2025",
-        "end": "25.10.2026"
-      }
-    },
-    {
-      "id": "20",
-      "name": "SW",
-      "employeeId": 2,
-      "period": {
-        "start": "30.10.2026",
-        "end": "30.11.2026"
-      }
-    },
-    {
-      "id": "10",
-      "name": "test",
-      "employeeId": 1,
-      "period": {
-        "start": "01.01.2026",
-        "end": "01.02.2026"
-      }
-    },
-    {
-      "id": "21",
-      "name": "UI",
-      "employeeId": 7,
-      "period": {
-        "start": "01.10.2025",
-        "end": "01.01.2026"
-      }
-    },
-    {
-      "id": "22",
-      "name": "idk",
-      "employeeId": 8,
-      "period": {
-        "start": "01.12.2025",
-        "end": "10.12.2025"
-      }
     }
   ],
   "tasks": [
     {
       "id": "101",
-      "name": "ADR for auth",
+      "name": "Forbedre design for modul",
       "employeeId": 2,
       "date": "2025-10-02"
     },
@@ -135,31 +74,19 @@
       "id": "102",
       "name": "UI for dashboard",
       "employeeId": 2,
-      "date": "2025-04-10"
+      "date": "2025-10-20"
     },
     {
       "id": "103",
       "name": "Fiks bugs",
-      "employeeId": 1,
-      "date": "2026-01-10"
+      "employeeId": 5,
+      "date": "2025-09-05"
     },
     {
       "id": "104",
-      "name": "Bygg API",
+      "name": "Intervju",
       "employeeId": 1,
-      "date": "2025-03-15"
-    },
-    {
-      "id": "105",
-      "name": "Fiks bugs",
-      "employeeId": 8,
-      "date": "05.09.2025"
-    },
-    {
-      "id": "106",
-      "name": "Test",
-      "employeeId": 10,
-      "date": "10.09.2025"
+      "date": "2025-11-20"
     }
   ]
 }

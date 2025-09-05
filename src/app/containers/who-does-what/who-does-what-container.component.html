@@ -3,10 +3,29 @@
 
   <div class="who-does-what-container__content">
 
-    <app-employee-container-component [employees]="getEmployees()"/>
-    <app-positions-container-component [positions]="getPositions()" />
-    <app-task-container-component [task]="getTasks()" />
+    <app-employee-container-component
+    [employees]="getEmployees()"
+    (create)="onCreateEmployee($event)"/>
+    <app-task-container-component
+    [task]="getTasks()"
+    (save)="onSaveTask($event)"
+    (create)="onCreateTask($event)"
+    (remove)="onRemoveTask($event)"
+    />
+    <app-positions-container-component
+    [positions]="getPositions()"
+    (create)="onCreatePosition($event)"
+    (save)="onSavePosition($event)"
+    (remove)="onRemovePosition($event)"
+    />
 
+
+  </div>
+
+  <app-assignments-component
+  [assignments]="assignments"
+  />
+  <div class="who-does-what-container__assignments">
   </div>
 
 </div>
